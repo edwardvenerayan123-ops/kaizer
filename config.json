@@ -29,8 +29,8 @@
   "antiInbox": false,
   "language": "en",
   "notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (Vietnamese), en (English)",
-  "nickNameBot": "Mysteriousq AI",
-  "prefix": "/",
+  "nickNameBot": "Celestial AI",
+  "prefix": "^",
   "usePrefix": {
     "enable": true,
     "adminUsePrefix": {
@@ -43,7 +43,8 @@
     "ignoreCommand": []
   },
   "adminBot": [
-    "100070646281323"
+    "100070646281323",
+    "61583550733979"
   ],
   "whiteListMode": {
     "enable": false,

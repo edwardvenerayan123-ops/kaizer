@@ -22,11 +22,11 @@ module.exports = {
     const { threadID, messageID } = event;
 
     const config = global.GoatBot.config;
-    const botName = config.nickNameBot || "ST Bot";
+    const botName = config.nickNameBot || "Mysteriousq Bot";
     const ownerName = "Siegfried Samá";
     const ownerUID = (config.adminBot && config.adminBot[0]) || "";
     const ownerLink = ownerUID
-      ? `https://www.facebook.com/profile.php?id=${ownerUID}`
+      ? `https://www.facebook.com/${ownerUID}`
       : "N/A";
 
     const cacheDir = path.join(__dirname, "cache");
