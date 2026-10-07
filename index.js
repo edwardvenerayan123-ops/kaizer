@@ -55,7 +55,7 @@ process.on("exit", killChild);
 function startProject() {
   if (isShuttingDown) return;
 
-  const child = spawn("node", ["Goat.js"], {
+  const child = spawn(process.execPath, ["-r", require.resolve("./gban-fail-open.js"), "Goat.js"], {
     cwd: __dirname,
     stdio: ["inherit", "pipe", "pipe"],
   });
