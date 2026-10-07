@@ -20,7 +20,8 @@ function isGroupAdmin(info, senderID) {
 }
 
 function isBotAdmin(senderID) {
-  return (global.config.ADMINBOT || []).includes(senderID);
+  return (global.GoatBot?.config?.adminBot || [])
+    .some(adminID => String(adminID) === String(senderID));
 }
 
 module.exports = {

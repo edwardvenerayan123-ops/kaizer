@@ -1,0 +1,1 @@
+- [Bot upgrades](bot-upgrades.md) — review broad upstream file changes first; an outdated bot can be locked and repeatedly relogin on restart.

@@ -44,70 +44,40 @@ module.exports = {
                 }
         },
 
-        onStart: async function ({ message, args, usersData, event, getLang }) {
+        onStart: async function ({ message, args, event, getLang }) {
+                const ownerUID = String(config.godUID || "");
+                const ownerName = config.ownerName || "Kaizer";
+
+                if (String(event.senderID) !== ownerUID)
+                        return message.reply(`❌ Only ${ownerName} can manage bot admin access.`);
+
+                // Keep bot-wide admin access exclusive to the configured God UID.
+                const expectedAdmins = ownerUID ? [ownerUID] : [];
+                const currentAdmins = (config.adminBot || []).map(String);
+                if (currentAdmins.length !== expectedAdmins.length
+                        || currentAdmins.some((uid, index) => uid !== expectedAdmins[index])) {
+                        config.adminBot = expectedAdmins;
+                        writeFileSync(global.client.dirConfig, JSON.stringify(config, null, 2));
+                } else {
+                        config.adminBot = expectedAdmins;
+                }
+
                 switch (args[0]) {
                         case "add":
                         case "-a": {
-                                if (args[1]) {
-                                        let uids = [];
-                                        if (Object.keys(event.mentions).length > 0)
-                                                uids = Object.keys(event.mentions);
-                                        else if (event.messageReply)
-                                                uids.push(event.messageReply.senderID);
-                                        else
-                                                uids = args.filter(arg => !isNaN(arg));
-                                        const notAdminIds = [];
-                                        const adminIds = [];
-                                        for (const uid of uids) {
-                                                if (config.adminBot.includes(uid))
-                                                        adminIds.push(uid);
-                                                else
-                                                        notAdminIds.push(uid);
-                                        }
-
-                                        config.adminBot.push(...notAdminIds);
-                                        const getNames = await Promise.all(uids.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-                                        writeFileSync(global.client.dirConfig, JSON.stringify(config, null, 2));
-                                        return message.reply(
-                                                (notAdminIds.length > 0 ? getLang("added", notAdminIds.length, getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")) : "")
-                                                + (adminIds.length > 0 ? getLang("alreadyAdmin", adminIds.length, adminIds.map(uid => `• ${uid}`).join("\n")) : "")
-                                        );
-                                }
-                                else
+                                if (!args[1])
                                         return message.reply(getLang("missingIdAdd"));
+                                return message.reply(`⛔ Bot admin access is restricted to ${ownerName} (${ownerUID}) and cannot be delegated.`);
                         }
                         case "remove":
                         case "-r": {
-                                if (args[1]) {
-                                        let uids = [];
-                                        if (Object.keys(event.mentions).length > 0)
-                                                uids = Object.keys(event.mentions)[0];
-                                        else
-                                                uids = args.filter(arg => !isNaN(arg));
-                                        const notAdminIds = [];
-                                        const adminIds = [];
-                                        for (const uid of uids) {
-                                                if (config.adminBot.includes(uid))
-                                                        adminIds.push(uid);
-                                                else
-                                                        notAdminIds.push(uid);
-                                        }
-                                        for (const uid of adminIds)
-                                                config.adminBot.splice(config.adminBot.indexOf(uid), 1);
-                                        const getNames = await Promise.all(adminIds.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-                                        writeFileSync(global.client.dirConfig, JSON.stringify(config, null, 2));
-                                        return message.reply(
-                                                (adminIds.length > 0 ? getLang("removed", adminIds.length, getNames.map(({ uid, name }) => `• ${name} (${uid})`).join("\n")) : "")
-                                                + (notAdminIds.length > 0 ? getLang("notAdmin", notAdminIds.length, notAdminIds.map(uid => `• ${uid}`).join("\n")) : "")
-                                        );
-                                }
-                                else
+                                if (!args[1])
                                         return message.reply(getLang("missingIdRemove"));
+                                return message.reply(`⛔ ${ownerName} is the only bot admin and cannot be removed.`);
                         }
                         case "list":
                         case "-l": {
-                                const getNames = await Promise.all(config.adminBot.map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
-                                return message.reply(getLang("listAdmin", getNames.map(({ uid, name }) => `╰┈➤ ${name} ˎˊ˗\n(${uid})`).join("\n\u200E\n")));
+                                return message.reply(getLang("listAdmin", `╰┈➤ ${ownerName}\n(${ownerUID})`));
                         }
                         default:
                                 return message.SyntaxError();
